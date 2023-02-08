@@ -57,4 +57,9 @@ class AuthorizationRequest {
       });
     }
   }
+  void setEmail(String? email) {
+    if (email != null) {
+      parameters.putIfAbsent('login_hint', () => email);
+    }
+  }
 }

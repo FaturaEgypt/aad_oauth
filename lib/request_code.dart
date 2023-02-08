@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 
-import 'request/authorization_request.dart';
-import 'model/config.dart';
+import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import 'model/config.dart';
+import 'request/authorization_request.dart';
 
 class RequestCode {
   final Config _config;
@@ -21,10 +22,11 @@ class RequestCode {
     );
   }
 
-  Future<String?> requestCode() async {
+  Future<String?> requestCode([String? email]) async {
     _code = null;
 
     final urlParams = _constructUrlParams();
+    _authorizationRequest.setEmail(email);
     final launchUri = Uri.parse('${_authorizationRequest.url}?$urlParams');
     final controller = WebViewController();
     await controller.setNavigationDelegate(_navigationDelegate);

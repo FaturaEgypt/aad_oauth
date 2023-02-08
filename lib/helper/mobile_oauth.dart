@@ -33,9 +33,10 @@ class MobileOAuth extends CoreOAuth {
   /// both access and refresh tokens are invalid, the web gui will be used.
   @override
   Future<Either<Failure, Token>> login(
-      {bool refreshIfAvailable = false}) async {
+      {bool refreshIfAvailable = false, String? email}) async {
     await _removeOldTokenOnFirstLogin();
-    return await _authorization(refreshIfAvailable: refreshIfAvailable);
+    return await _authorization(
+        refreshIfAvailable: refreshIfAvailable, email: email);
   }
 
   /// Retrieve cached OAuth Access Token.
@@ -63,7 +64,7 @@ class MobileOAuth extends CoreOAuth {
   /// will be returned, as long as we deem it still valid. In the event that
   /// both access and refresh tokens are invalid, the web gui will be used.
   Future<Either<Failure, Token>> _authorization(
-      {bool refreshIfAvailable = false}) async {
+      {bool refreshIfAvailable = false, String? email}) async {
     var token = await _authStorage.loadTokenFromCache();
 
     if (!refreshIfAvailable) {
@@ -84,7 +85,7 @@ class MobileOAuth extends CoreOAuth {
     }
 
     if (!token.hasValidAccessToken()) {
-      final result = await _performFullAuthFlow();
+      final result = await _performFullAuthFlow(email: email);
       var failure;
       result.fold(
         (l) => failure = l,
@@ -100,15 +101,15 @@ class MobileOAuth extends CoreOAuth {
   }
 
   /// Authorize user via refresh token or web gui if necessary.
-  Future<Either<Failure, Token>> _performFullAuthFlow() async {
-    var code = await _requestCode.requestCode();
+  Future<Either<Failure, Token>> _performFullAuthFlow({String? email}) async {
+    var code = await _requestCode.requestCode(email);
     if (code == null) {
       return Left(AadOauthFailure(
         ErrorType.AccessDeniedOrAuthenticationCanceled,
         'Access denied or authentication canceled.',
       ));
     }
-    return await _requestToken.requestToken(code);
+    return await _requestToken.requestToken(code, email);
   }
 
   Future<void> _removeOldTokenOnFirstLogin() async {
@@ -120,5 +121,3 @@ class MobileOAuth extends CoreOAuth {
     }
   }
 }
-
-CoreOAuth getOAuthConfig(Config config) => MobileOAuth(config);

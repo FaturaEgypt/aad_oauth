@@ -15,8 +15,9 @@ class RequestToken {
 
   RequestToken(this.config);
 
-  Future<Either<Failure, Token>> requestToken(String code) async {
-    final _tokenRequest = TokenRequestDetails(config, code);
+  Future<Either<Failure, Token>> requestToken(
+      String code, String? email) async {
+    final _tokenRequest = TokenRequestDetails(config..loginHint = email, code);
     return await _sendTokenRequest(
         _tokenRequest.url, _tokenRequest.params, _tokenRequest.headers);
   }

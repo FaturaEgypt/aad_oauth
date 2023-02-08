@@ -4,6 +4,7 @@
 library msauth;
 
 import 'dart:async';
+
 import 'package:aad_oauth/helper/core_oauth.dart';
 import 'package:aad_oauth/model/config.dart';
 import 'package:aad_oauth/model/failure.dart';
@@ -74,7 +75,7 @@ class WebOAuth extends CoreOAuth {
 
   @override
   Future<Either<Failure, Token>> login(
-      {bool refreshIfAvailable = false}) async {
+      {bool refreshIfAvailable = false, String? email}) async {
     final completer = Completer<Either<Failure, Token>>();
 
     jsLogin(
