@@ -121,3 +121,5 @@ class MobileOAuth extends CoreOAuth {
     }
   }
 }
+
+CoreOAuth getOAuthConfig(Config config) => MobileOAuth(config);
